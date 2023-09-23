@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Animal extends Model
@@ -20,4 +21,24 @@ class Animal extends Model
         'description',
         'personality',
     ];
+
+    /**
+     * 取得動物的分類
+     */
+    public function type()
+    {
+        return $this->belongsTo('App\Type');
+    }
+
+    /**
+     * 計算年齡
+    *
+    * @param  string  $value
+    * @return string
+    */
+    public function getAgeAttribute()
+    {
+        $diff = Carbon::now()->diff($this->birthday);
+        return "{$diff->y}歲{$diff->m}月";
+    }
 }
