@@ -13,12 +13,12 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::apiResource('animal', 'AnimalController');
+Route::apiResource('animals', 'Api\AnimalController');
 
 // 這裡可以用 like 辨識
-Route::post('animal/{animal}/like', 'AnimalController@like');
+Route::post('animals/{animal}/like', 'Api\AnimalController@like');
 
-Route::apiResource('types', 'TypeController');
+Route::apiResource('types', 'Api\TypeController');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

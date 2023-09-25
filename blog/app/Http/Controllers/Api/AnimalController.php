@@ -1,17 +1,23 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Auth;
 use App\Animal;
+use App\Http\Controllers\Controller;
+use App\Services\AnimalService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Resources\AnimalResource;
+use App\Http\Requests\StoreAnimalRequest;
 
 class AnimalController extends Controller
 {
-    public function __construct()
+    private $animalService;
+
+    public function __construct(AnimalService $animalService)
     {
+        $this->animalService = $animalService;
         $this->middleware('auth:api', ['except' => ['index','show']]);
     }
 
@@ -30,26 +36,28 @@ class AnimalController extends Controller
         $query = Animal::query();
 
         // 篩選欄位條件
-        if (isset($request->filters)) {
-            $filters = explode(',', $request->filters);
-            foreach ($filters as $key => $filter) {
-                list($criteria, $value) = explode(':', $filter);
-                $query->where($criteria, $value);
-            }
-        }
+        // if (isset($request->filters)) {
+        //     $filters = explode(',', $request->filters);
+        //     foreach ($filters as $key => $filter) {
+        //         list($criteria, $value) = explode(':', $filter);
+        //         $query->where($criteria, $value);
+        //     }
+        // }
+        $query = $this->animalService->filterAnimals($request->filters, $query);
 
         //排列順序
-        if (isset($request->sort)) {
-            $sorts = explode(',', $request->sort);
-            foreach ($sorts as $key => $sort) {
-                list($criteria, $value) = explode(':', $sort);
-                if ($value == 'asc' || $value == 'desc') {
-                    $query->orderBy($criteria, $value);
-                }
-            }
-        } else {
-            $query->orderBy('id', 'asc');
-        }
+        // if (isset($request->sort)) {
+        //     $sorts = explode(',', $request->sort);
+        //     foreach ($sorts as $key => $sort) {
+        //         list($criteria, $value) = explode(':', $sort);
+        //         if ($value == 'asc' || $value == 'desc') {
+        //             $query->orderBy($criteria, $value);
+        //         }
+        //     }
+        // } else {
+        //     $query->orderBy('id', 'asc');
+        // }
+        $query = $this->animalService->sortAnimals($request->sort, $query);
 
         $animals = $query->where('id', '>=', $marker)->paginate($limit);
 
@@ -72,17 +80,17 @@ class AnimalController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreAnimalRequest $request)
     {
-        $this->validate($request, [
-            'type_id' => 'required',
-            'name' => 'required|max:255',
-            'birthday' => 'required|date',
-            'area' => 'required|max:255',
-            'fix' => 'required|boolean',
-            'description' => 'nullable',
-            'personality' => 'nullable'
-        ]);
+        // $this->validate($request, [
+        //     'type_id' => 'required',
+        //     'name' => 'required|max:255',
+        //     'birthday' => 'required|date',
+        //     'area' => 'required|max:255',
+        //     'fix' => 'required|boolean',
+        //     'description' => 'nullable',
+        //     'personality' => 'nullable'
+        // ]);
 
         //Animal Model 有 create 寫好的方法，把請求的內容，用all方法轉為陣列，傳入 create 方法中。
         $animal = Animal::create($request->all());

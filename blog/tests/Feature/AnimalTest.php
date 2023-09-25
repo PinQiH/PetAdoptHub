@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\User;
 use Tests\TestCase;
+use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class AnimalTest extends TestCase
 {
-    use RefreshDatabase;
     use DatabaseTransactions;
 
     /**
@@ -20,7 +20,7 @@ class AnimalTest extends TestCase
     public function testViewAllAnimal()
     {
         //請求 api/animal 結果存入 $response
-        $response = $this->get('api/animal');
+        $response = $this->get('api/animals');
 
         //assertJsonStructure 判斷 Json 結構是否與我們下方的結構相同
         $response->assertJsonStructure([
@@ -67,10 +67,10 @@ class AnimalTest extends TestCase
 
         // 請求時並傳入資料
         $response = $this->json(
-            'POST', 'api/animal',
+            'POST', 'api/animals',
             [
                 'type_id' => '1',
-                'name' => '小黑',
+                'name' => '大黑',
                 'birthday' => '2019-10-05', //今天要補班
                 'area' => '台北市',
                 'fix' => '1'
@@ -101,7 +101,7 @@ class AnimalTest extends TestCase
 
         // 請求時並傳入資料
         $response = $this->json(
-            'POST', 'api/animal',
+            'POST', 'api/animals',
             [
                 'type_id' => '1',
                 'name' => '大黑',
