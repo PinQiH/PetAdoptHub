@@ -15,6 +15,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Model' => 'App\Policies\ModelPolicy',
+        Animal::class => AnimalPolicy::class,
     ];
 
     /**
@@ -27,5 +28,11 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Passport::routes();
+
+        // access_token 設定核發後15天後過期
+        Passport::tokensExpireIn(now()->addDays(15));
+
+        // refresh_token 設定核發後30天後過期
+        Passport::refreshTokensExpireIn(now()->addDays(30));
     }
 }
